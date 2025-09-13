@@ -4,3 +4,6 @@ dist/
 
 # env
 .env
+
+# vscode
+.vscode/
