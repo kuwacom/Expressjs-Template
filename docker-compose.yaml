@@ -1,5 +1,5 @@
 services:
-  discord-bot:
+  expressjs:
     image: node:20
     container_name: expressjs
     working_dir: /app
