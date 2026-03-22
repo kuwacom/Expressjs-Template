@@ -1,15 +1,26 @@
 import logger from '@/services/logger';
 import prisma from '@/services/prisma';
+import { UserParamsSchema } from '@/schemas/user';
 import { Request, Response } from 'express';
 
 // 指定したユーザーIDの取得
 export const getUser = async (req: Request, res: Response) => {
-  const { userId } = req.params;
+  const userParamsValidation = UserParamsSchema.safeParse(req.params);
+
+  if (!userParamsValidation.success) {
+    res.status(400).json({
+      error: 'Validation Error',
+      details: userParamsValidation.error.issues,
+    });
+    return;
+  }
+
+  const { userId } = userParamsValidation.data;
 
   try {
     const user = await prisma.user.findUnique({
       where: {
-        id: Number(userId), // IDを数値に変換
+        id: userId,
       },
     });
 

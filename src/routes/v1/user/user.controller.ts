@@ -1,10 +1,21 @@
 import logger from '@/services/logger';
 import prisma from '@/services/prisma';
+import { CreateUserBodySchema } from '@/schemas/user';
 import { Request, Response } from 'express';
 
 // ユーザー登録
 export const createUser = async (req: Request, res: Response) => {
-  const { name } = req.body ?? {};
+  const createUserValidation = CreateUserBodySchema.safeParse(req.body);
+
+  if (!createUserValidation.success) {
+    res.status(400).json({
+      error: 'Validation Error',
+      details: createUserValidation.error.issues,
+    });
+    return;
+  }
+
+  const { name } = createUserValidation.data;
 
   try {
     const user = await prisma.user.create({
