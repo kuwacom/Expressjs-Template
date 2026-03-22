@@ -1,4 +1,4 @@
-import express, { Request, Response } from 'express';
+import express from 'express';
 import env from '@/configs/env';
 import cors from 'cors';
 import { loggerMiddleware } from '@/middleware/logger';

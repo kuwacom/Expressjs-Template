@@ -7,3 +7,12 @@ dist/
 
 # vscode
 .vscode/
+
+# Database
+*.db
+*.sqlite
+prisma/dev.db
+prisma/dev-backup.db
+
+# Prisma generated client
+src/generated/

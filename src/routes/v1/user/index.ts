@@ -1,5 +1,6 @@
 import { Router } from 'express';
-import { createUser, getUserById, getUsers } from './user.controller';
+import userIdRouter from './[userId]';
+import { createUser, getUsers } from './user.controller';
 
 const userRouter = Router();
 
@@ -9,7 +10,7 @@ userRouter.post('/', createUser);
 // ユーザー取得エンドポイント
 userRouter.get('/', getUsers);
 
-// 指定したユーザーIDの取得エンドポイント
-userRouter.get('/:id', getUserById);
+// 指定したユーザーID配下のルート
+userRouter.use('/:userId', userIdRouter);
 
 export default userRouter;
