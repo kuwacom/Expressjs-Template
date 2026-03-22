@@ -2,15 +2,15 @@ import { Router } from 'express';
 import userIdRouter from './[userId]';
 import { createUser, getUsers } from './user.controller';
 
-const userRouter = Router();
+const usersRouter = Router();
 
 // ユーザー登録エンドポイント
-userRouter.post('/', createUser);
+usersRouter.post('/', createUser);
 
 // ユーザー取得エンドポイント
-userRouter.get('/', getUsers);
+usersRouter.get('/', getUsers);
 
 // 指定したユーザーID配下のルート
-userRouter.use('/:userId', userIdRouter);
+usersRouter.use('/:userId', userIdRouter);
 
-export default userRouter;
+export default usersRouter;

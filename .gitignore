@@ -16,3 +16,6 @@ prisma/dev-backup.db
 
 # Prisma generated client
 src/generated/
+
+# tmp
+tmp

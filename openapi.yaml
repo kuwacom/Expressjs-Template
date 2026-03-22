@@ -9,7 +9,7 @@ servers:
     description: ローカル開発用サーバー
 
 paths:
-  /user:
+  /users:
     post:
       summary: 新しいユーザーを登録する
       description: 名前を入力して新しいユーザーを登録します。
@@ -63,14 +63,14 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
 
-  /user/{id}:
+  /users/{userId}:
     get:
       summary: 指定したIDのユーザーを取得する
       description: 指定したIDのユーザー情報を取得します。
       tags:
         - ユーザー
       parameters:
-        - name: id
+        - name: userId
           in: path
           required: true
           description: 取得するユーザーのID
