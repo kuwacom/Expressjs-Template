@@ -1,5 +1,9 @@
 import prisma from '@/services/prisma';
-import { CreateUserBodySchema } from '@/schemas/user';
+import {
+  CreateUserBodySchema,
+  UserListResponseSchema,
+  UserResponseSchema,
+} from '@/schemas/user';
 import { Request, Response } from 'express';
 import { apiError, ErrorCode } from '@/lib/apiError';
 
@@ -21,12 +25,24 @@ export const createUser = async (req: Request, res: Response) => {
       name,
     },
   });
-  res.status(201).json(user);
+  const responseBody = UserResponseSchema.parse({
+    id: user.id,
+    name: user.name,
+    createdAt: user.created.toISOString(),
+  });
+  res.status(201).json(responseBody);
 };
 
 // ユーザー取得
-export const getUsers = async (req: Request, res: Response): Promise<void> => {
+export const getUsers = async (req: Request, res: Response) => {
   void req;
   const users = await prisma.user.findMany();
-  res.json(users);
+  const responseBody = UserListResponseSchema.parse(
+    users.map((user) => ({
+      id: user.id,
+      name: user.name,
+      createdAt: user.created.toISOString(),
+    }))
+  );
+  res.json(responseBody);
 };

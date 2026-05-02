@@ -1,5 +1,5 @@
 import prisma from '@/services/prisma';
-import { UserParamsSchema } from '@/schemas/user';
+import { UserParamsSchema, UserResponseSchema } from '@/schemas/user';
 import { Request, Response } from 'express';
 import { apiError, ErrorCode } from '@/lib/apiError';
 
@@ -26,5 +26,10 @@ export const getUser = async (req: Request, res: Response) => {
     throw apiError(ErrorCode.NOT_FOUND, 'User');
   }
 
-  res.json(user);
+  const responseBody = UserResponseSchema.parse({
+    id: user.id,
+    name: user.name,
+    createdAt: user.created.toISOString(),
+  });
+  res.json(responseBody);
 };

@@ -1,5 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
-import { ApiError, ErrorCode } from '@/lib/apiError';
+import {
+  ApiError,
+  ApiErrorResponseSchema,
+  ErrorCode,
+} from '@/lib/apiError';
 import logger from '@/services/logger';
 
 export const errorHandler = (
@@ -28,8 +32,9 @@ export const errorHandler = (
   }
 
   logger.error('Unexpected error', err);
-  res.status(500).json({
+  const responseBody = ApiErrorResponseSchema.parse({
     code: ErrorCode.INTERNAL_SERVER_ERROR,
     message: 'Internal server error',
   });
+  res.status(500).json(responseBody);
 };

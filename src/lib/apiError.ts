@@ -1,25 +1,31 @@
-export const ErrorCode = {
+import z from 'zod';
+
+export const ErrorCodeSchema = z.enum([
   // リクエストの形式や入力値が不正な場合
-  VALIDATION_ERROR: 'VALIDATION_ERROR',
+  'VALIDATION_ERROR',
   // 指定したリソースが存在しない場合
-  NOT_FOUND: 'NOT_FOUND',
+  'NOT_FOUND',
   // 認証が必要、または認証情報が不正な場合
-  UNAUTHORIZED: 'UNAUTHORIZED',
+  'UNAUTHORIZED',
   // 認証済みだが操作する権限がない場合
-  FORBIDDEN: 'FORBIDDEN',
+  'FORBIDDEN',
   // 一意制約や状態競合で処理を完了できない場合
-  CONFLICT: 'CONFLICT',
+  'CONFLICT',
   // 想定外の例外などでサーバー側が失敗した場合
-  INTERNAL_SERVER_ERROR: 'INTERNAL_SERVER_ERROR',
-} as const;
+  'INTERNAL_SERVER_ERROR',
+]);
 
-export type ErrorCode = (typeof ErrorCode)[keyof typeof ErrorCode];
+export const ErrorCode = ErrorCodeSchema.enum;
 
-export interface ApiErrorResponse {
-  code: ErrorCode;
-  message: string;
-  details?: unknown;
-}
+export type ErrorCode = z.infer<typeof ErrorCodeSchema>;
+
+export const ApiErrorResponseSchema = z.object({
+  code: ErrorCodeSchema,
+  message: z.string(),
+  details: z.unknown().optional(),
+});
+
+export type ApiErrorResponse = z.infer<typeof ApiErrorResponseSchema>;
 
 /**
  * # ApiError
@@ -57,11 +63,11 @@ export class ApiError extends Error {
    * @returns API 共通エラーレスポンス
    */
   public toResponse(): ApiErrorResponse {
-    return {
+    return ApiErrorResponseSchema.parse({
       code: this.code,
       message: this.message,
       ...(this.details !== undefined && { details: this.details }),
-    };
+    });
   }
 }
 
@@ -105,9 +111,7 @@ const apiErrorBuilders: ApiErrorBuilderMap = {
     new ApiError(403, ErrorCode.FORBIDDEN, 'Forbidden', undefined, true),
   [ErrorCode.CONFLICT]: (message = 'Conflict') =>
     new ApiError(409, ErrorCode.CONFLICT, message, undefined, true),
-  [ErrorCode.INTERNAL_SERVER_ERROR]: (
-    message = 'Internal server error'
-  ) =>
+  [ErrorCode.INTERNAL_SERVER_ERROR]: (message = 'Internal server error') =>
     new ApiError(
       500,
       ErrorCode.INTERNAL_SERVER_ERROR,
