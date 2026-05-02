@@ -35,12 +35,18 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/User'
+        '400':
+          description: リクエストボディのバリデーションに失敗した場合
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
         '500':
           description: ユーザー登録に失敗した場合
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: '#/components/schemas/ApiErrorResponse'
     
     get:
       summary: 全ユーザーの取得
@@ -61,7 +67,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: '#/components/schemas/ApiErrorResponse'
 
   /users/{userId}:
     get:
@@ -83,18 +89,24 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/User'
+        '400':
+          description: パスパラメータのバリデーションに失敗した場合
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
         '404':
           description: 指定したIDのユーザーが存在しない場合
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: '#/components/schemas/ApiErrorResponse'
         '500':
           description: ユーザーの取得に失敗した場合
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: '#/components/schemas/ApiErrorResponse'
 
 components:
   schemas:
@@ -111,9 +123,60 @@ components:
           type: string
           format: date-time
           example: '2024-01-01T00:00:00.000Z'
-    Error:
+    ApiErrorResponse:
+      oneOf:
+        - $ref: '#/components/schemas/ValidationErrorResponse'
+        - $ref: '#/components/schemas/ErrorResponse'
+    ValidationErrorResponse:
       type: object
       properties:
-        error:
+        code:
+          type: string
+          enum:
+            - VALIDATION_ERROR
+        message:
+          type: string
+          example: Validation failed
+        details:
+          type: array
+          items:
+            $ref: '#/components/schemas/ZodIssue'
+      required:
+        - code
+        - message
+        - details
+    ErrorResponse:
+      type: object
+      properties:
+        code:
+          type: string
+          enum:
+            - NOT_FOUND
+            - UNAUTHORIZED
+            - FORBIDDEN
+            - CONFLICT
+            - INTERNAL_SERVER_ERROR
+        message:
           type: string
           example: User not found
+      required:
+        - code
+        - message
+    ZodIssue:
+      type: object
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        path:
+          type: array
+          items:
+            oneOf:
+              - type: string
+              - type: integer
+      required:
+        - code
+        - message
+        - path
+      additionalProperties: true
