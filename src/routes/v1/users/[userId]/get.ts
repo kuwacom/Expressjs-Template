@@ -1,10 +1,17 @@
-import prisma from '@/services/prisma';
-import { UserParamsSchema } from '@/schemas/user';
 import { Request, Response } from 'express';
 import { apiError, ErrorCode } from '@/lib/apiError';
+import { UserParamsSchema } from '@/schemas/user';
+import prisma from '@/services/prisma';
 
-// 指定したユーザーIDの取得
-export const getUser = async (req: Request, res: Response) => {
+/**
+ * ### get
+ * `/v1/users/:userId` を処理する
+ *
+ * @param req - Express リクエスト
+ * @param res - Express レスポンス
+ * @returns レスポンス送信完了
+ */
+export const get = async (req: Request, res: Response): Promise<void> => {
   const userParamsValidation = UserParamsSchema.safeParse(req.params);
 
   if (!userParamsValidation.success) {
@@ -15,7 +22,6 @@ export const getUser = async (req: Request, res: Response) => {
   }
 
   const { userId } = userParamsValidation.data;
-
   const user = await prisma.user.findUnique({
     where: {
       id: userId,

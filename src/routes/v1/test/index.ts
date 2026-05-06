@@ -1,10 +1,8 @@
-import { Router, Request, Response } from 'express';
+import { Router } from 'express';
+import { get } from './get';
 
 const testRouter = Router();
 
-// GET /v1/test のエンドポイント
-testRouter.get('/', (req: Request, res: Response) => {
-  res.json({ message: 'Hello from /v1/test!' });
-});
+testRouter.get('/', get);
 
 export default testRouter;

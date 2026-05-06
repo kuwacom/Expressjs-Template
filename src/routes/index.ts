@@ -1,13 +1,10 @@
 import { Router } from 'express';
-import { apiError, ErrorCode } from '@/lib/apiError';
+import { fallback } from '@/routes/fallback';
 import v1Router from '@/routes/v1';
 
-const router = Router();
+const routesRouter = Router();
 
-// v1のルート設定
-router.use('/v1', v1Router);
-router.use((req, res, next) => {
-  next(apiError(ErrorCode.FORBIDDEN));
-});
+routesRouter.use('/v1', v1Router);
+routesRouter.use(fallback);
 
-export default router;
+export default routesRouter;

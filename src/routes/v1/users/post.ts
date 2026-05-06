@@ -1,10 +1,17 @@
-import prisma from '@/services/prisma';
-import { CreateUserBodySchema } from '@/schemas/user';
 import { Request, Response } from 'express';
 import { apiError, ErrorCode } from '@/lib/apiError';
+import { CreateUserBodySchema } from '@/schemas/user';
+import prisma from '@/services/prisma';
 
-// ユーザー登録
-export const createUser = async (req: Request, res: Response) => {
+/**
+ * ### post
+ * `/v1/users` を処理する
+ *
+ * @param req - Express リクエスト
+ * @param res - Express レスポンス
+ * @returns レスポンス送信完了
+ */
+export const post = async (req: Request, res: Response): Promise<void> => {
   const createUserValidation = CreateUserBodySchema.safeParse(req.body);
 
   if (!createUserValidation.success) {
@@ -15,18 +22,11 @@ export const createUser = async (req: Request, res: Response) => {
   }
 
   const { name } = createUserValidation.data;
-
   const user = await prisma.user.create({
     data: {
       name,
     },
   });
-  res.status(201).json(user);
-};
 
-// ユーザー取得
-export const getUsers = async (req: Request, res: Response): Promise<void> => {
-  void req;
-  const users = await prisma.user.findMany();
-  res.json(users);
+  res.status(201).json(user);
 };
